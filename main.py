@@ -1,3 +1,6 @@
+from datetime import datetime
+
+
 # 1) Создайте дескриптор, который будет делать поля класса управляемые им
 # доступными только для чтения.
 class MyDescriptor:
@@ -25,10 +28,13 @@ class Box:
 # любыми значениями, кроме целых чисел. Т.е., если тому или иному полю
 # попытаться присвоить, например, строку, то должно быть возбужденно
 # исключение.
-class Point:
-    def __init__(self, x, y):
+class Circle:
+    LOG_TXT_FILE = "txt.txt"
+
+    def __init__(self, x, y, radius=1):
         self.x = x
         self.y = y
+        self.__radius = radius  # HW_11.3
 
     def __setattr__(self, key, value):
         if isinstance(value, int):
@@ -36,10 +42,25 @@ class Point:
         else:
             raise NotImplementedError("Not integer")
 
-# 3) Реализуйте свойство класса, которое обладает следующим функционалом:
-# при установки значения этого свойства в файл с заранее
-# определенным названием должно сохранятся время (когда устанавливали
-# значение свойства) и установленное значение.
+    # 3) Реализуйте свойство класса, которое обладает следующим функционалом:
+    # при установки значения этого свойства в файл с заранее
+    # определенным названием должно сохранятся время (когда устанавливали
+    # значение свойства) и установленное значение.
+
+    def log_to_file(self, value):
+        with open(self.LOG_TXT_FILE, "a") as file:
+            file.write(f"radius - {value} : {datetime.now()}\n")
+
+    @property
+    def radius(self):
+        print(1)
+        return self.__radius
+
+    @radius.setter
+    def radius(self, radius):
+        print(2)
+        self.log_to_file(radius)
+        self.__radius = radius
 
 
 def main():
@@ -49,7 +70,7 @@ def main():
     b1.volume = 15
     print(b1.volume)
     # HW_11.2
-    p1 = Point(10,12)
+    p1 = Circle(10, 12)
     print(f"cords({p1.x},{p1.y})")
     try:
         p1.x = "20"
@@ -58,6 +79,10 @@ def main():
         print(ex)
     print(f"cords({p1.x},{p1.y})")
     # HW_11.3
+    print(p1.radius)
+    p1.radius = 5
+    p1.radius = 10
+    print(p1.radius)
 
 
 if __name__ == "__main__":
